@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  linux:
+    name: Core on Linux
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test
+
+  macos:
+    name: macOS (Vision, ImageIO, CLI, MCP)
+    runs-on: macos-latest
+    permissions:
+      contents: write # publishes the example report to the `example-output` branch
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift --version
+      - name: Test (including real text recognition on the example)
+        run: swift test
+      - name: Build the CLI
+        run: swift build -c release
+      - name: Run the example
+        run: |
+          set +e
+          .build/release/parity compare Examples/design.png Examples/actual.png \
+            --width-points 420 --ignore-top 59 --output build/example | tee build-example.log
+          status=${PIPESTATUS[0]}
+          set -e
+          # The example has three planted differences, so the check must fail (exit 1).
+          test "$status" -eq 1
+          grep -q "Missing" build-example.log
+      - name: MCP handshake
+        run: |
+          printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+            "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{\"name\":\"check_design\",\"arguments\":{\"design\":\"$PWD/Examples/design.png\",\"actual\":\"$PWD/Examples/actual.png\",\"width_points\":420,\"ignore_top_points\":59}}}" \
+            | .build/release/parity mcp > mcp.log
+          python3 - <<'PY'
+          import json
+          lines = [json.loads(l) for l in open("mcp.log")]
+          assert lines[0]["result"]["serverInfo"]["name"] == "design-parity"
+          assert [t["name"] for t in lines[1]["result"]["tools"]] == ["check_design", "capture_simulator"]
+          content = lines[2]["result"]["content"]
+          assert content[0]["type"] == "text" and "Differs from the design" in content[0]["text"], content[0]
+          assert content[1]["type"] == "image" and content[1]["mimeType"] == "image/png"
+          print(content[0]["text"])
+          PY
+      - name: Publish the example output
+        if: github.event_name == 'push'
+        working-directory: build/example
+        run: |
+          git init -q && git checkout -q -b example-output
+          git add report.md report.json overlay.png
+          git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" commit -qm "Example output for $GITHUB_SHA"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" example-output
