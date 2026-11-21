@@ -17,13 +17,22 @@ jobs:
   macos:
     name: macOS (Vision, ImageIO, CLI, MCP)
     runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      # GitHub's macOS runners are virtual machines without a Neural Engine.
+      PARITY_OCR_CPU_ONLY: "1"
     permissions:
       contents: write # publishes the example report to the `example-output` branch
     steps:
       - uses: actions/checkout@v4
       - run: swift --version
-      - name: Test (including real text recognition on the example)
-        run: swift test
+      - name: Test core, Figma and MCP
+        timeout-minutes: 10
+        # `script` gives the test runner a terminal, so output streams live instead of being buffered.
+        run: script -q /dev/null swift test --skip ParityAppleTests
+      - name: Test macOS adapters (real text recognition on the example)
+        timeout-minutes: 10
+        run: script -q /dev/null swift test --filter ParityAppleTests --no-parallel
       - name: Build the CLI
         run: swift build -c release
       - name: Run the example

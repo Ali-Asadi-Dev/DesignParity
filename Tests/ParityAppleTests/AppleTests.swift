@@ -28,7 +28,7 @@ private func render(_ lines: [(String, CGFloat)], width: Int = 900, height: Int 
     return try PNG.rgba(from: context.makeImage()!)
 }
 
-@Suite struct AppleTests {
+@Suite(.timeLimit(.minutes(2))) struct AppleTests {
     @Test func pngRoundTripsExactly() throws {
         var image = RGBAImage(width: 7, height: 5)
         image[3, 2] = RGBA(91, 75, 219)

@@ -96,15 +96,19 @@ public enum PNG {
 
 /// On-device text recognition (Vision). Works offline and needs no permissions.
 public enum TextRecognizer {
+    /// Set `PARITY_OCR_CPU_ONLY=1` on machines without a Neural Engine (e.g. CI virtual machines).
+    static var cpuOnly: Bool { ProcessInfo.processInfo.environment["PARITY_OCR_CPU_ONLY"] == "1" }
+
+    /// - Parameter languages: BCP-47 codes in priority order. Default: `PARITY_OCR_LANGUAGES`
+    ///   (comma-separated) or English. Vision does not support every language (Persian, for one).
     public static func recognize(_ image: RGBAImage, languages: [String]? = nil) throws -> [TextBox] {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
-        if let languages {
-            request.recognitionLanguages = languages
-        } else {
-            request.automaticallyDetectsLanguage = true
-        }
+        let configured = ProcessInfo.processInfo.environment["PARITY_OCR_LANGUAGES"]?
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        request.recognitionLanguages = languages ?? configured ?? ["en-US"]
+        if cpuOnly { request.usesCPUOnly = true }
         let handler = VNImageRequestHandler(cgImage: try PNG.cgImage(image), options: [:])
         try handler.perform([request])
         return (request.results ?? []).compactMap { observation in
