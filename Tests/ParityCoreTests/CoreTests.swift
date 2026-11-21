@@ -157,6 +157,24 @@ private func screen(width: Int = 120, height: Int = 240, buttonColor: RGBA = RGB
         #expect(findings.map { $0.designPoint?.y ?? 0 } == findings.map { $0.designPoint?.y ?? 0 }.sorted())
     }
 
+    @Test func smallWobbleOnTheOtherAxisIsNotReported() {
+        let findings = TextDiff.compare(design: [box("Netflix", x: 90, y: 540)], actual: [box("Netflix", x: 92, y: 552)], options: options)
+        #expect(findings.first?.offset == Point(x: 0, y: 12))
+    }
+
+    @Test func textsThatMovedTogetherAreOneLine() {
+        func moved(_ text: String, y: Double, dy: Double) -> TextFinding {
+            TextFinding(kind: .moved, expected: text, actual: text, designPoint: Point(x: 40, y: y), offset: Point(x: 0, y: dy))
+        }
+        let findings = [moved("Next 7 days", y: 492, dy: 12), moved("Netflix", y: 540, dy: 13), moved("$15.49", y: 549, dy: 12),
+                        moved("Spotify", y: 614, dy: 12), moved("Title", y: 100, dy: -20)]
+        let report = Report(similarity: 0.98, passThreshold: 0.995, differentPixels: 1, comparedSize: PixelSize(width: 1, height: 1),
+                            scale: 3, regions: [], textFindings: findings, notes: [], diffMask: [])
+        let markdown = report.markdown()
+        #expect(markdown.contains("**Moved together** (4 texts from y 492 pt): 12 pt too low. “Next 7 days”, “Netflix”, “$15.49” and 1 more."))
+        #expect(markdown.contains("**Moved** “Title” at (40, 100) pt: 20 pt too high."))
+    }
+
     @Test func toleratesOcrJoiningLines() {
         let design = [box("$94.76", x: 20, y: 120), box("a year", x: 120, y: 120)]
         let actual = [box("$94.76 a year", x: 20, y: 120, w: 200)]

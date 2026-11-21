@@ -85,8 +85,11 @@ public enum TextDiff {
             let dx = (a.rect.x - d.rect.x) * options.screenWidth
             let dy = (a.rect.y - d.rect.y) * options.screenHeight
             if abs(dx) > options.positionTolerance || abs(dy) > options.positionTolerance {
+                // Report only the axis that is really off: OCR boxes wobble by a point or two.
+                let x = abs(dx) > options.positionTolerance ? dx.rounded() : 0
+                let y = abs(dy) > options.positionTolerance ? dy.rounded() : 0
                 findings.append(TextFinding(kind: .moved, expected: d.text, actual: a.text, designPoint: point(d.rect),
-                                            offset: Point(x: dx.rounded(), y: dy.rounded())))
+                                            offset: Point(x: x, y: y)))
             }
             if d.rect.height > 0 {
                 let ratio = a.rect.height / d.rect.height

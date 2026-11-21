@@ -87,8 +87,20 @@ public struct Report: Codable, Sendable {
 
         if !textFindings.isEmpty {
             lines.append("\n### Text")
-            for f in textFindings {
+            // Texts that moved by the same amount moved together (a whole section shifted):
+            // one line for the group says more than one line per label.
+            let groups = Self.movedGroups(textFindings)
+            var reportedGroup = Set<Int>()
+            for (index, f) in textFindings.enumerated() {
                 let at = f.designPoint.map { String(format: " at (%.0f, %.0f) pt", $0.x, $0.y) } ?? ""
+                if let group = groups.first(where: { $0.contains(index) }) {
+                    guard reportedGroup.insert(group[0]).inserted else { continue }
+                    let names = group.prefix(3).map { "“\(textFindings[$0].expected ?? "")”" }.joined(separator: ", ")
+                    let more = group.count > 3 ? " and \(group.count - 3) more" : ""
+                    let top = textFindings[group[0]].designPoint.map { String(format: " from y %.0f pt", $0.y) } ?? ""
+                    lines.append("- **Moved together** (\(group.count) texts\(top)): \(Self.direction(f.offset ?? Point(x: 0, y: 0))). \(names)\(more).")
+                    continue
+                }
                 switch f.kind {
                 case .missing:
                     lines.append("- **Missing** “\(f.expected ?? "")”\(at).")
@@ -114,10 +126,27 @@ public struct Report: Codable, Sendable {
                 lines.append(String(format: "%d. x %.0f–%.0f, y %.0f–%.0f pt (%.0f×%.0f pt)",
                                     index + 1, r.x, r.x + r.width, r.y, r.y + r.height, r.width, r.height))
             }
-            if regions.count > maxRegions { lines.append("…and \(regions.count - maxRegions) smaller areas.") }
+            if regions.count > maxRegions { lines.append("…and \(regions.count - maxRegions) more further down.") }
         }
         if regions.isEmpty && textFindings.isEmpty { lines.append("\nNo differences found.") }
         return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Indices of moved texts that share an offset (within 2 pt), in groups of 3 or more.
+    static func movedGroups(_ findings: [TextFinding]) -> [[Int]] {
+        var groups: [[Int]] = []
+        for (index, f) in findings.enumerated() where f.kind == .moved {
+            guard let o = f.offset else { continue }
+            if let g = groups.firstIndex(where: { group in
+                let first = findings[group[0]].offset!
+                return abs(first.x - o.x) <= 2 && abs(first.y - o.y) <= 2
+            }) {
+                groups[g].append(index)
+            } else {
+                groups.append([index])
+            }
+        }
+        return groups.filter { $0.count >= 3 }
     }
 
     static func direction(_ offset: Point) -> String {
