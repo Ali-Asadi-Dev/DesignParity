@@ -1,0 +1,242 @@
+{
+  "comparedSize" : {
+    "height" : 2736,
+    "width" : 1260
+  },
+  "differentPixels" : 56379,
+  "notes" : [
+
+  ],
+  "passThreshold" : 0.995,
+  "passed" : false,
+  "regions" : [
+    {
+      "differentPixels" : 2622,
+      "rect" : {
+        "height" : 15,
+        "width" : 126,
+        "x" : 39,
+        "y" : 297
+      }
+    },
+    {
+      "differentPixels" : 12293,
+      "rect" : {
+        "height" : 42,
+        "width" : 42,
+        "x" : 39,
+        "y" : 405
+      }
+    },
+    {
+      "differentPixels" : 5765,
+      "rect" : {
+        "height" : 30,
+        "width" : 93,
+        "x" : 39,
+        "y" : 492
+      }
+    },
+    {
+      "differentPixels" : 9410,
+      "rect" : {
+        "height" : 54,
+        "width" : 42,
+        "x" : 39,
+        "y" : 537
+      }
+    },
+    {
+      "differentPixels" : 5283,
+      "rect" : {
+        "height" : 48,
+        "width" : 108,
+        "x" : 93,
+        "y" : 540
+      }
+    },
+    {
+      "differentPixels" : 2776,
+      "rect" : {
+        "height" : 27,
+        "width" : 48,
+        "x" : 309,
+        "y" : 549
+      }
+    },
+    {
+      "differentPixels" : 434,
+      "rect" : {
+        "height" : 27,
+        "width" : 9,
+        "x" : 369,
+        "y" : 549
+      }
+    },
+    {
+      "differentPixels" : 9148,
+      "rect" : {
+        "height" : 54,
+        "width" : 42,
+        "x" : 39,
+        "y" : 609
+      }
+    },
+    {
+      "differentPixels" : 5330,
+      "rect" : {
+        "height" : 48,
+        "width" : 108,
+        "x" : 93,
+        "y" : 615
+      }
+    },
+    {
+      "differentPixels" : 2884,
+      "rect" : {
+        "height" : 27,
+        "width" : 48,
+        "x" : 309,
+        "y" : 624
+      }
+    },
+    {
+      "differentPixels" : 434,
+      "rect" : {
+        "height" : 27,
+        "width" : 9,
+        "x" : 369,
+        "y" : 624
+      }
+    }
+  ],
+  "scale" : 3,
+  "similarity" : 0.98364574631022,
+  "textFindings" : [
+    {
+      "designPoint" : {
+        "x" : 38.42271662093765,
+        "y" : 296.93023256986964
+      },
+      "expected" : "6 active subscriptions",
+      "kind" : "missing"
+    },
+    {
+      "actual" : "Next 7 days",
+      "designPoint" : {
+        "x" : 39.62275832214933,
+        "y" : 492.4174859145975
+      },
+      "expected" : "Next 7 days",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "Netflix",
+      "designPoint" : {
+        "x" : 91.41955758288046,
+        "y" : 539.5116278873866
+      },
+      "expected" : "Netflix",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 13
+      }
+    },
+    {
+      "actual" : "$15.49",
+      "designPoint" : {
+        "x" : 305.9923866264266,
+        "y" : 548.5907765581188
+      },
+      "expected" : "$15.49",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "N",
+      "designPoint" : {
+        "x" : 52.99684565161107,
+        "y" : 548.7906979482093
+      },
+      "expected" : "N",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "In 2 days • Nov 22",
+      "designPoint" : {
+        "x" : 90.09463667276327,
+        "y" : 561.9999997830549
+      },
+      "expected" : "In 2 days • Nov 22",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "Spotify",
+      "designPoint" : {
+        "x" : 91.41955851626167,
+        "y" : 613.7441857587896
+      },
+      "expected" : "Spotify",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "$12.99",
+      "designPoint" : {
+        "x" : 305.8951300616257,
+        "y" : 621.2874531986091
+      },
+      "expected" : "$12.99",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "S",
+      "designPoint" : {
+        "x" : 52.99684561834698,
+        "y" : 624.3488372920457
+      },
+      "expected" : "S",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    },
+    {
+      "actual" : "In 5 days • Nov 25",
+      "designPoint" : {
+        "x" : 88.76971579435299,
+        "y" : 636.2790698905668
+      },
+      "expected" : "In 5 days • Nov 25",
+      "kind" : "moved",
+      "offset" : {
+        "x" : 0,
+        "y" : 12
+      }
+    }
+  ]
+}
